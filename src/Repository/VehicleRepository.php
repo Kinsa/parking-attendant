@@ -40,4 +40,20 @@ class VehicleRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByPlate(string $licensePlate): ?array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT * FROM vehicle v
+            WHERE v.license_plate = :license_plate
+            ORDER BY v.license_plate ASC
+            ';
+
+        $resultSet = $conn->executeQuery($sql, ['license_plate' => $licensePlate]);
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $resultSet->fetchAllAssociative();
+    }
 }

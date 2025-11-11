@@ -67,3 +67,12 @@ I Googled creating a REST API in Symfony knowing I would need a controller and r
 I smoke tested that by running the server and loading the URL in Postman
 
 I then dug into the documentation on Doctrine until I found [Querying with SQL](https://symfony.com/doc/current/doctrine.html#querying-with-sql)
+
+And revising my controller to allow query strings: https://symfony.com/blog/new-in-symfony-6-3-query-parameters-mapper, https://symfony.com/doc/current/controller.html#mapping-query-parameters-individually
+
+And then I had to figure out how to call my Registry method in my controller: https://stackoverflow.com/a/70211792
+
+And smoke tested it again in Postman
+
+Which seemed like a good time to add some tests
+

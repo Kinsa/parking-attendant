@@ -42,8 +42,21 @@ The Symfony project was initially configured to build the minimal framework via 
 
 ### Modeling
 
-Doctrine was added [following the directions](https://symfony.com/doc/current/doctrine.html) and an Entity class for Vehicles was setup in the database. As an MVP it contains fields for `id`, `license_plate` (string), and `time_in` (immutable datetime)
+Doctrine was added [following the directions](https://symfony.com/doc/current/doctrine.html) and an Entity class for Vehicle was setup in the database. As an MVP it contains fields for `id`, `license_plate` (string), and `time_in` (immutable datetime)
 
 #### Fixture
 
 For sample data the [DoctrineFixturesBundle](https://symfony.com/bundles/DoctrineFixturesBundle/current/index.html) package was added and a fixture was setup to mock some entries
+
+I looked up the date format for license plates in the UK on Google
+
+I looked up the PHP way to get the last 2 chars of a string (`[-2:]` in python) in GitHub Copilot chat
+
+I looked up the PHP way to get a random character between A and Z [on StackOverflow](https://stackoverflow.com/a/31441519)
+
+I looked up [the PHP DateTime class](https://www.php.net/manual/en/datetime.modify.php) to see how I might modify the date back a day
+
+I looked up creating a random time for a date [on StackOverflow](https://stackoverflow.com/a/58259320)
+
+I loaded that fixture with `php bin/console doctrine:fixtures:load` and verified in PHPMyAdmin that I had 20 vehicles with random license plates and timestamps from yesterday
+

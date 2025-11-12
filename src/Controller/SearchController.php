@@ -17,21 +17,19 @@ class SearchController extends AbstractController
     #[Route('/search', name: 'search')]
     public function search(
         #[MapQueryParameter] string $plate = '',
-        #[MapQueryParameter] ?DateTime $date_start = null,
-        #[MapQueryParameter] ?DateTime $date_end = null,
+        #[MapQueryParameter] ?DateTime $at = null,
+        #[MapQueryParameter] int $window = 120,
     ): JsonResponse
     {
         // Set default values for date parameters if not provided
-        if ($date_end === null) {
+        if ($at === null) {
             $date_end = new \DateTimeImmutable('now');
         }
 
-        if ($date_start === null) {
-            $date_start = $date_start = $date_end->modify('-2 hours');
-        }
-
         // Calculate parking duration window
-        $parking_window = $date_start->diff($date_end); // This sets a default 2-hour interval
+        $parking_window = new \DateInterval('PT' . $window . 'M');
+
+        $date_start = $date_end->sub($parking_window);
 
         // create a new Response object
         $response = new JsonResponse();

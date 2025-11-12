@@ -178,4 +178,12 @@ I had to lookup how to work out the timedelta to figure out the expiration date.
 
 Tests are once again passing; it seems to work with the default values. Next up is to test it with a custom window for example "What cars were in the lot that needed to be ticketed yesterday at 12:10pm
 
-It seems that the API in being refactored could be simplified though. Date start and date end are now quite confusing. It would make more sense to pass a window in minutes and a date to calculate from
+It seems that the API in being refactored could be simplified though. 
+
+Commit at this point: 812469e801369f12e3a490c308bce09a40571184
+
+Date start and date end are now quite confusing. It would make more sense to pass a window in minutes and a date to calculate from. 
+
+I refactored the API to take a datetime object as `at` and a time window in minutes as `window`. I asked AI how to help me with the DateInterval object now that I am not subracting date start from date end to calculate the window which gave me `$parking_window = new \DateInterval('PT' . $window . 'M');` which is feeling similar to Python's time delta.
+
+With that little bit of refactoring, all the tests still pass because I haven't yet tested the custom window parameters.

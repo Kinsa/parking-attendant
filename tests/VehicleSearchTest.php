@@ -196,7 +196,7 @@ class VehicleSearchTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(400);
         $this->assertJsonContains([
             'results' => [],
-            'message' => 'The datetime query parameter must be a valid date in the format YYYY-MM-DD HH:MM:SS.',
+            'message' => 'Invalid datetime format or invalid date/time values. Use YYYY-MM-DD HH:MM:SS with valid dates.',
         ]);
     }
 
@@ -213,7 +213,7 @@ class VehicleSearchTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(400);
         $this->assertJsonContains([
             'results' => [],
-            'message' => 'The datetime query parameter must be a valid date in the format YYYY-MM-DD HH:MM:SS.',
+            'message' => 'Invalid datetime format or invalid date/time values. Use YYYY-MM-DD HH:MM:SS with valid dates.',
         ]);
     }
 
@@ -228,7 +228,7 @@ class VehicleSearchTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(400);
         $this->assertJsonContains([
             'results' => [],
-            'message' => 'The datetime query parameter must be a valid date in the format YYYY-MM-DD HH:MM:SS.',
+            'message' => 'Invalid datetime format or invalid date/time values. Use YYYY-MM-DD HH:MM:SS with valid dates.',
         ]);
     }
 
@@ -261,7 +261,7 @@ class VehicleSearchTest extends ApiTestCase
     }
 
     /**
-     * Test the same car, left and returned within the window is counted twice.
+     * Test the same car, left and returned within the window is included for both entrances.
      * Remember, the car from the previous test still exists in the database.
      */
     public function testSameCarTwiceWithinWindow(): void
@@ -301,5 +301,35 @@ class VehicleSearchTest extends ApiTestCase
         ]);
     }
 
-    // TODO: test a custom window
+    /**
+     * Test the same car, with a 48 hour window.
+     */
+    public function test48HourWindow(): void
+    {
+        $ten_minutes_ago = new \DateTimeImmutable('-10 minutes');
+
+        static::createClient()->request('GET', '/search', [
+            'query' => ['plate' => self::$PLATE, 'window' => 2880],
+        ]);
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertJsonContains(['message' => '3 results found.']);
+        $this->assertJsonContains([
+            'results' => [
+                [
+                    'license_plate' => self::$PLATE,
+                    'time_in' => $ten_minutes_ago->format('Y-m-d H:i:s'),
+                    'expired' => false,
+                ],
+                [
+                    'license_plate' => self::$PLATE,
+                    'time_in' => self::$TIME_IN,
+                    'expired' => false,
+                ],
+                [
+                    'license_plate' => self::$PLATE,
+                    'expired' => false,
+                ],
+            ],
+        ]);
+    }
 }

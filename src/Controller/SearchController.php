@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\VehicleRepository;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,19 +16,21 @@ class SearchController extends AbstractController
     {
     }
 
-    private function returnInvalidDateResponse()
+    private static function isValidDateTime(string $datetime): bool
+    {
+        $format = 'Y-m-d H:i:s';
+        $dateTime = \DateTime::createFromFormat($format, $datetime);
+
+        // Check if the datetime was created successfully AND
+        // the formatted version matches the input (catches invalid dates)
+        return $dateTime && $dateTime->format($format) === $datetime;
+    }
+
+    private function returnInvalidDateResponse(): JsonResponse
     {
         $response = new JsonResponse();
         $response->setStatusCode(Response::HTTP_BAD_REQUEST);
-        $response->setData(
-            [
-                'message' => 'The datetime query parameter must be a valid date in the format YYYY-MM-DD HH:MM:SS.',
-                'results' => [],
-            ],
-        );
-        // set the response content type to application/json (not plain text for JSON)
-        $response->headers->set('Content-Type', 'application/json');
-
+        $response->setData(['message' => 'Invalid datetime format or invalid date/time values. Use YYYY-MM-DD HH:MM:SS with valid dates.', 'results' => []]);
         return $response;
     }
 
@@ -37,18 +40,18 @@ class SearchController extends AbstractController
         #[MapQueryParameter] string $datetime = '',
         #[MapQueryParameter] int $window = 120,
     ): JsonResponse {
-        // Set default values for date parameters if not provided
+
         if (empty($datetime)) {
+            // Set default values for date parameters if not provided
             $calculateExpiredParkingFrom = new \DateTimeImmutable('now');
         } else {
-            // Test for a valid datetime format
-            if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $datetime)) {
-                return $this->returnInvalidDateResponse();
+            if (!self::isValidDateTime($datetime)) {
+                return self::returnInvalidDateResponse();
             } else {
                 try {
                     $calculateExpiredParkingFrom = new \DateTimeImmutable($datetime);
                 } catch (\Exception $e) {
-                    return $this->returnInvalidDateResponse();
+                    return self::returnInvalidDateResponse();
                 }
             }
         }
@@ -63,9 +66,9 @@ class SearchController extends AbstractController
 
         $vehicleRepository = $this->doctrine;
 
-        if (isset($plate) && !empty($plate)) {
+        if (!empty($plate)) {
             $matches = $vehicleRepository->findByPlate($plate);
-            if (!$matches || empty($matches)) {
+            if (empty($matches)) {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
                 $response->setData([
                     'message' => 'No results found.',
@@ -109,9 +112,6 @@ class SearchController extends AbstractController
                 ],
             );
         }
-
-        // set the response content type to application/json (not plain text for JSON)
-        $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }

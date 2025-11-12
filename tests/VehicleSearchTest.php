@@ -337,6 +337,10 @@ class VehicleSearchTest extends ApiTestCase
         static::createClient()->request('GET', '/search', [
             'query' => ['plate' => self::$PLATE, 'window' => 'zebra'],
         ]);
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertJsonContains([
+            'message' => 'Invalid window format or value. Window must be a positive integer value.',
+        ]);
     }
 }

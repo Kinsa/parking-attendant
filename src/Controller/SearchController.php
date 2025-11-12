@@ -39,7 +39,7 @@ class SearchController extends AbstractController
     {
         $response = new JsonResponse();
         $response->setStatusCode(Response::HTTP_BAD_REQUEST);
-        $response->setData(['message' => 'Invalid window format or value. Window must be an integer value.']);
+        $response->setData(['message' => 'Invalid window format or value. Window must be a positive integer value.']);
 
         return $response;
     }
@@ -48,7 +48,7 @@ class SearchController extends AbstractController
     public function search(
         #[MapQueryParameter] string $plate = '',
         #[MapQueryParameter] string $datetime = '',
-        #[MapQueryParameter] int $window = 120,
+        #[MapQueryParameter] string $window = '120',
     ): JsonResponse {
         if (empty($datetime)) {
             // Set default values for date parameters if not provided
@@ -66,11 +66,16 @@ class SearchController extends AbstractController
         }
 
         // Calculate parking duration window
-        try {
-            $parkingWindow = new \DateInterval('PT'.$window.'M');
-            $latestSafeParkedTime = $calculateExpiredParkingFrom->sub($parkingWindow);
-        } catch (\Exception $e) {
+        if (!is_numeric($window) || (int) $window <= 0
+        ) {
             return self::returnInvalidWindowResponse();
+        } else {
+            try {
+                $parkingWindow = new \DateInterval('PT'.$window.'M');
+                $latestSafeParkedTime = $calculateExpiredParkingFrom->sub($parkingWindow);
+            } catch (\Exception $e) {
+                return self::returnInvalidWindowResponse();
+            }
         }
 
         // create a new Response object

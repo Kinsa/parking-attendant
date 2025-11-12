@@ -44,23 +44,27 @@ class VehicleRepository extends ServiceEntityRepository
     /**
      * @return [] Returns an array of Vehicle objects
      */
-    public function findByPlate(string $vrm): ?array
+    public function findByVrm(string $vrm, ?\DateTimeImmutable $query_from, ?\DateTimeImmutable $query_to): ?array
     {
         $conn = $this->getEntityManager()->getConnection();
 
-        $sql = '
+        $dateCondition = !empty($query_from) ? 'AND v.time_in BETWEEN :query_from AND :query_to' : '';
+
+        $sql = <<<SQL
             SELECT DISTINCT * FROM (
                 (SELECT * FROM vehicle v
-                WHERE v.vrm SOUNDS LIKE :vrm)
+                 WHERE v.vrm SOUNDS LIKE :vrm {$dateCondition})
                 UNION ALL
                 (SELECT * FROM vehicle v
-                WHERE v.vrm LIKE CONCAT(:vrm, "%"))
+                 WHERE v.vrm LIKE CONCAT(:vrm, "%") {$dateCondition})
             ) AS combined_results
             ORDER BY time_in DESC
-            ';
+        SQL;
 
         $resultSet = $conn->executeQuery($sql, [
             'vrm' => $vrm,
+            'query_from' => $query_from,
+            'query_to' => $query_to,
         ]);
 
         // returns an array of arrays (i.e. a raw data set)

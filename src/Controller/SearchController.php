@@ -85,7 +85,7 @@ class SearchController extends AbstractController
         $vehicleRepository = $this->doctrine;
 
         if (!empty($vrm)) {
-            $matches = $vehicleRepository->findByPlate($vrm);
+            $matches = $vehicleRepository->findByVrm($vrm, null, null);
             if (empty($matches)) {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
                 $response->setData([

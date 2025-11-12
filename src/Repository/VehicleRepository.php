@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Vehicle;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,8 +42,8 @@ class VehicleRepository extends ServiceEntityRepository
     //    }
 
     /**
-    * @return [] Returns an array of Vehicle objects
-    */
+     * @return [] Returns an array of Vehicle objects
+     */
     public function findByPlate(string $licensePlate): ?array
     {
         $conn = $this->getEntityManager()->getConnection();

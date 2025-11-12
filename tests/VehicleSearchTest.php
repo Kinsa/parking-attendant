@@ -2,8 +2,8 @@
 
 namespace App\Tests;
 
-use App\Entity\Vehicle;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Entity\Vehicle;
 
 class VehicleSearchTest extends ApiTestCase
 {
@@ -57,13 +57,13 @@ class VehicleSearchTest extends ApiTestCase
     }
 
     /**
-     * Test that a license plate search for a plate not in the database 
+     * Test that a license plate search for a plate not in the database
      * returns a not found response.
      */
     public function testNoResultsFound(): void
     {
         static::createClient()->request('GET', '/search', [
-            'query' => ['plate' => self::$PLATE . 'XYZ']
+            'query' => ['plate' => self::$PLATE.'XYZ'],
         ]);
 
         $this->assertResponseStatusCodeSame(404);
@@ -71,12 +71,12 @@ class VehicleSearchTest extends ApiTestCase
         $this->assertJsonContains([
             'results' => [
                 [
-                    'license_plate' => self::$PLATE . 'XYZ',
+                    'license_plate' => self::$PLATE.'XYZ',
                     'time_in' => null,
                     'expired' => true,
                     'expiration_time' => null,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -89,7 +89,7 @@ class VehicleSearchTest extends ApiTestCase
     public function testMatchFound(): void
     {
         static::createClient()->request('GET', '/search', [
-            'query' => ['plate' => self::$PLATE]
+            'query' => ['plate' => self::$PLATE],
         ]);
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonContains(['message' => '1 result found.']);
@@ -100,8 +100,8 @@ class VehicleSearchTest extends ApiTestCase
                     'time_in' => self::$TIME_IN,
                     'expired' => false,
                     'expiration_time' => (new \DateTimeImmutable(self::$TIME_IN))->add(new \DateInterval('PT2H'))->format('Y-m-d H:i:s'),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -111,7 +111,7 @@ class VehicleSearchTest extends ApiTestCase
     public function testSimilarMatchFound(): void
     {
         static::createClient()->request('GET', '/search', [
-            'query' => ['plate' => self::$SIMILAR_PLATE]
+            'query' => ['plate' => self::$SIMILAR_PLATE],
         ]);
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonContains(['message' => '1 result found.']);
@@ -122,8 +122,8 @@ class VehicleSearchTest extends ApiTestCase
                     'time_in' => self::$TIME_IN,
                     'expired' => false,
                     'expiration_time' => (new \DateTimeImmutable(self::$TIME_IN))->add(new \DateInterval('PT2H'))->format('Y-m-d H:i:s'),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -133,7 +133,7 @@ class VehicleSearchTest extends ApiTestCase
     public function testPartialSimilarMatchFound(): void
     {
         static::createClient()->request('GET', '/search', [
-            'query' => ['plate' => substr(self::$PLATE, 0, 8)]
+            'query' => ['plate' => substr(self::$PLATE, 0, 8)],
         ]);
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonContains(['message' => '1 result found.']);
@@ -144,8 +144,8 @@ class VehicleSearchTest extends ApiTestCase
                     'time_in' => self::$TIME_IN,
                     'expired' => false,
                     'expiration_time' => (new \DateTimeImmutable(self::$TIME_IN))->add(new \DateInterval('PT2H'))->format('Y-m-d H:i:s'),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -165,7 +165,7 @@ class VehicleSearchTest extends ApiTestCase
         $entityManager->flush();
 
         static::createClient()->request('GET', '/search', [
-            'query' => ['plate' => self::$PLATE]
+            'query' => ['plate' => self::$PLATE],
         ]);
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonContains(['message' => '2 results found.']);
@@ -180,8 +180,8 @@ class VehicleSearchTest extends ApiTestCase
                     'license_plate' => self::$PLATE,
                     'time_in' => $yesterday->format('Y-m-d H:i:s'),
                     'expired' => true,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -202,7 +202,7 @@ class VehicleSearchTest extends ApiTestCase
         $entityManager->flush();
 
         static::createClient()->request('GET', '/search', [
-            'query' => ['plate' => self::$PLATE]
+            'query' => ['plate' => self::$PLATE],
         ]);
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonContains(['message' => '3 results found.']);
@@ -221,10 +221,10 @@ class VehicleSearchTest extends ApiTestCase
                 [
                     'license_plate' => self::$PLATE,
                     'expired' => true,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
-    // TODO: test a custom window 
+    // TODO: test a custom window
 }

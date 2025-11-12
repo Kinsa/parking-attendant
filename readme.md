@@ -187,3 +187,6 @@ Date start and date end are now quite confusing. It would make more sense to pas
 I refactored the API to take a datetime object as `at` and a time window in minutes as `window`. I asked AI how to help me with the DateInterval object now that I am not subracting date start from date end to calculate the window which gave me `$parking_window = new \DateInterval('PT' . $window . 'M');` which is feeling similar to Python's time delta.
 
 With that little bit of refactoring, all the tests still pass because I haven't yet tested the custom window parameters.
+
+Commit at this point: b27f1a0b69b056c14fcfb1546a5ffa37c15421ad
+

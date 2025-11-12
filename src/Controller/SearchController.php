@@ -86,8 +86,8 @@ class SearchController extends AbstractController
 
         if (!empty($vrm)) {
             $matches = $vehicleRepository->findByVrm($vrm, null, null);
+            $response->setStatusCode(Response::HTTP_OK);
             if (empty($matches)) {
-                $response->setStatusCode(Response::HTTP_OK);
                 $response->setData([
                     'message' => 'No matches for VRN found.',
                     'results' => [
@@ -100,7 +100,6 @@ class SearchController extends AbstractController
                     ],
                 ]);
             } else {
-                $response->setStatusCode(Response::HTTP_OK);
                 $message = count($matches).' ';
                 $message .= 1 === count($matches) ? 'result' : 'results';
                 $message .= ' found.';

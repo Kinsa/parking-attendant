@@ -125,4 +125,4 @@ It then made some changes.
 
 With a bit of fine tuning of the message I have passing tests.
 
-I then worked out the syntax for asserting the response I was expecting. I had to dig into assertJsonContains to figure out the syntax and then from PHPUnit I was expecting to have to have an exact match. Since the ID changes I was getting a failure. I asked AI "this fails because the id changes. can i set a wildcard or just test for license_plate and time_in maybe as 2 separate tests?" and it told me to just remove the `id` parameter.
+I then worked out the syntax for asserting the response I was expecting. I had to dig into assertJsonContains to figure out the syntax and then from PHPUnit I was expecting to have to have an exact match. Since the ID changes I was getting a failure. I asked AI "this fails because the id changes. can i set a wildcard or just test for license_plate and time_in maybe as 2 separate tests?" and it told me to just remove the `id` parameter. And we once again have passing tests.

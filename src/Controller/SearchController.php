@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\VehicleRepository;
-use DateTime;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,10 +46,10 @@ class SearchController extends AbstractController
 
     #[Route('/search', name: 'search')]
     public function search(
+        LoggerInterface $logger,
         #[MapQueryParameter] string $plate = '',
         #[MapQueryParameter] string $datetime = '',
         #[MapQueryParameter] string $window = '120',
-
     ): JsonResponse {
         if (empty($datetime)) {
             // Set default values for date parameters if not provided
@@ -105,7 +105,17 @@ class SearchController extends AbstractController
                 $message .= 1 === count($matches) ? 'result' : 'results';
                 $message .= ' found.';
                 for ($i = 0; $i < count($matches); ++$i) {
-                    $time_in = new \DateTimeImmutable($matches[$i]['time_in']);
+                    try {
+                        $time_in = new \DateTimeImmutable($matches[$i]['time_in']);
+                    } catch (\Exception $e) {
+                        $logger->critical('Error parsing time_in value', [
+                            'time_in_value' => $matches[$i]['time_in'],
+                            'entry_id' => $matches[$i]['id'],
+                            'error' => $e->getMessage(),
+                            'exception_class' => get_class($e),
+                        ]);
+                        continue;
+                    }
                     $time_in_str = $time_in->format('Y-m-d H:i:s');
                     $session_end = $time_in->add($parkingWindow); // Adds parking window to time_in
 

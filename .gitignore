@@ -5,6 +5,10 @@
 .idea/
 .vscode/
 
+# DB Backups
+*.sql
+!init-db.sql
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

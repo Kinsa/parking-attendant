@@ -1,7 +1,5 @@
 This project contains a means of tracking vehicle entries into a parking lot and querying that data:
 
-- by plate number to see how long the vehicle has been parked
-- by a datetime range to see which vehicles were parked within that date time
 
 ## Database
 

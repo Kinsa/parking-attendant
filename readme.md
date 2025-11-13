@@ -1,5 +1,92 @@
-This project contains a means of tracking vehicle entries into a parking lot and querying that data:
+This project contains a means of tracking vehicle entries into a parking lot and assessing whether they have overstayed their session.
 
+## API Documentation
+
+### GET /search
+
+Query vehicle parking records by VRM (Vehicle Registration Mark).
+
+#### Required Parameters
+- `vrm` (string) - Vehicle Registration Mark to search for
+
+#### Optional Parameters
+- `datetime` (string) - Reference datetime for session calculation
+  - Format: `YYYY-MM-DD HH:MM:SS`
+  - Default: Current time
+  - Example: `2024-11-13 14:30:00`
+
+- `window` (integer) - Parking duration window in minutes
+  - Default: `120`
+  - Must be a positive integer
+
+- `query_from` (string) - Limit results to entries after this datetime
+  - Format: `YYYY-MM-DD HH:MM:SS`
+  - Must be provided together with `query_to`
+  - Must be earlier than or equal to `query_to`
+
+- `query_to` (string) - Limit results to entries before this datetime
+  - Format: `YYYY-MM-DD HH:MM:SS`
+  - Must be provided together with `query_from`
+  - Must be later than or equal to `query_from`
+
+**Note:** When using `query_from` and `query_to`, the `datetime` parameter must fall within this range.
+
+#### Example Requests
+
+```bash
+# Basic search
+curl "http://localhost:8000/search?vrm=AB12CDE"
+
+# Search with custom datetime and window
+curl "http://localhost:8000/search?vrm=AB12CDE&datetime=2024-11-13 14:30:00&window=180"
+
+# Search within a specific time range
+curl "http://localhost:8000/search?vrm=AB12CDE&query_from=2024-11-13 10:00:00&query_to=2024-11-13 16:00:00"
+```
+
+#### Response Format
+
+**Success (200 OK):**
+```json
+{
+  "message": "1 result found.",
+  "results": [
+    {
+      "vrm": "AB12CDE",
+      "time_in": "2024-11-13 12:00:00",
+      "session": "partial",
+      "session_end": "2024-11-13 14:00:00"
+    }
+  ]
+}
+```
+
+**No match (200 OK):**
+```json
+{
+  "message": "No matches for VRN found.",
+  "results": [
+    {
+      "vrm": "AB12CDE",
+      "time_in": null,
+      "session": "none",
+      "session_end": null
+    }
+  ]
+}
+```
+
+**Error (400 Bad Request):**
+```json
+{
+  "message": "A VRN is required."
+}
+```
+
+#### Session Status Values
+- `partial` - Vehicle is currently within the parking window
+- `full` - Vehicle's parking session has expired
+- `none` - No parking record found for the VRM
 
 ## Database
 
@@ -242,14 +329,14 @@ Quickly outlining next steps:
 
 - [x] Test the custom window parameters
 - [x] Rename 'plate' to 'VRM'
-- [ ] Reinstate optional date parameters to limit the queried response to a specific period
+- [x] Reinstate optional date parameters to limit the queried response to a specific period
   - [x] add query_from and query_to query parameters
   - [x] convert the strings to datetime objects; verify formatting
-    - [ ] test
+    - [x] test
   - [x] verify that datetime is within query_from and query_to or raise an error
-    - [ ] test
+    - [x] test
   - [x] update $matches = $vehicleRepository->findByPlate($vrm); to pass from and to along to the repository
   - [x] update the SQL query to conditionally handle those parameters
 - [x] Refactor 'expired' to indicate 'partial session', 'full session', or 'no session' (with 'expired' equaling 'full session' and 'no session' being the no math return)
 - [ ] Revisit timezones - datetime query parameter should probably account for this and we need to handle it
-- [ ] Document how to use
+- [x] Document how to use

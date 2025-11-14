@@ -6,6 +6,38 @@ This project contains a means of tracking vehicle entries into a parking lot and
 
 There are a series of use case scenarios which [are described and can be run in Postman](https://kinsacreative-9361599.postman.co/workspace/Kinsa-Creative's-Workspace~0b9e49cf-f915-49e3-833c-f71cae8edbe0/collection/49907170-7408272b-c732-468f-8f25-6613326e2065?action=share&creator=49907170). All that is required to access and run them is a free Postman account.
 
+### Production Fixture Data
+
+The production database contains the following entries. These can be queried using Postman.
+
+```
++----+----------+---------------------+
+| id | vrm      | time_in             |
++----+----------+---------------------+
+| 18 | MA10 VQY | 2025-11-11 00:29:00 |
+|  4 | MA04 TVZ | 2025-11-11 00:30:00 |
+| 20 | MA92 KKE | 2025-11-11 01:32:00 |
+| 13 | MA22 MUZ | 2025-11-11 02:56:00 |
+|  2 | MA25 KHT | 2025-11-11 04:23:00 |
+|  6 | MA93 GEG | 2025-11-11 05:32:00 |
+|  9 | MA97 GRA | 2025-11-11 06:07:00 |
+| 11 | MA04 OCM | 2025-11-11 06:45:00 |
+| 10 | MA01 POV | 2025-11-11 07:28:00 |
+| 12 | MA06 MWU | 2025-11-11 10:25:00 |
+| 14 | MA19 ZZW | 2025-11-11 11:25:00 |
+| 17 | MA13 NFV | 2025-11-11 12:07:00 |
+| 15 | MA90 AMH | 2025-11-11 15:37:00 |
+|  7 | MA16 GXX | 2025-11-11 15:49:00 |
+| 19 | MA97 PPO | 2025-11-11 15:56:00 |
+|  8 | MA94 TEJ | 2025-11-11 17:16:00 |
+|  1 | MA06 GLQ | 2025-11-11 19:46:00 |
+|  3 | MA15 BSL | 2025-11-11 19:55:00 |
+| 21 | 16 GX    | 2025-11-11 20:41:00 |
+| 16 | MA94 IWT | 2025-11-11 22:11:00 |
+|  5 | MA10 JPJ | 2025-11-11 23:23:00 |
++----+----------+---------------------+
+```
+
 ## API Documentation
 
 ### GET /api
@@ -88,36 +120,6 @@ curl "http://localhost:8000/api?vrm=AB12CDE&query_from=2024-11-13 10:00:00&query
 - `partial` - Vehicle is currently within the parking window
 - `full` - Vehicle's parking session has expired
 - `none` - No parking record found for the VRM
-
-### Production Fixture Data
-
-```
-+----+----------+---------------------+
-| id | vrm      | time_in             |
-+----+----------+---------------------+
-| 18 | MA10 VQY | 2025-11-11 00:29:00 |
-|  4 | MA04 TVZ | 2025-11-11 00:30:00 |
-| 20 | MA92 KKE | 2025-11-11 01:32:00 |
-| 13 | MA22 MUZ | 2025-11-11 02:56:00 |
-|  2 | MA25 KHT | 2025-11-11 04:23:00 |
-|  6 | MA93 GEG | 2025-11-11 05:32:00 |
-|  9 | MA97 GRA | 2025-11-11 06:07:00 |
-| 11 | MA04 OCM | 2025-11-11 06:45:00 |
-| 10 | MA01 POV | 2025-11-11 07:28:00 |
-| 12 | MA06 MWU | 2025-11-11 10:25:00 |
-| 14 | MA19 ZZW | 2025-11-11 11:25:00 |
-| 17 | MA13 NFV | 2025-11-11 12:07:00 |
-| 15 | MA90 AMH | 2025-11-11 15:37:00 |
-|  7 | MA16 GXX | 2025-11-11 15:49:00 |
-| 19 | MA97 PPO | 2025-11-11 15:56:00 |
-|  8 | MA94 TEJ | 2025-11-11 17:16:00 |
-|  1 | MA06 GLQ | 2025-11-11 19:46:00 |
-|  3 | MA15 BSL | 2025-11-11 19:55:00 |
-| 21 | 16 GX    | 2025-11-11 20:41:00 |
-| 16 | MA94 IWT | 2025-11-11 22:11:00 |
-|  5 | MA10 JPJ | 2025-11-11 23:23:00 |
-+----+----------+---------------------+
-```
 
 ## Development Database
 

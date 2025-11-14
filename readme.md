@@ -326,33 +326,58 @@ php bin/console doctrine:migrations:migrate
 - Added comprehensive API documentation with examples
 - Documented all query parameters, response formats, and session statuses
 
-### 10. Partials and Test Refactoring (`0334baf2`, `0266ce5`)
-- Added use cases to readme as full scenarios
-- The scenario for partials didn't actually match my test: revised test and updated the query so that if a partial VRM is recorded and a full VRM is searched for, responses are returned
-- If tests are run out of order, they fail: revised setup and tear down from class based to test based so each test can be run in isolation
-- AI assistance: Explained `LIKE` query order in/out, Directed AI agent that I wanted to change setupBeforeClass and tearDownAfterClass to do that for each test individually 
+### 10. Use Case Scenarios and Test Isolation (`6f993c1`, `1a9303e`)
+- Added comprehensive use case scenarios to README as full workflows
+- Fixed partial VRM search: updated query to return results when partial VRM is recorded but full VRM is searched
+- Refactored test lifecycle from class-based (`setupBeforeClass`/`tearDownAfterClass`) to test-based (`setUp`/`tearDown`) for proper test isolation
+- AI assistance: Explained `LIKE` query order behavior; directed refactoring from class-based to test-based setup/teardown
 
-### 11. Bugfix 
-- In testing the use cases against the database fixture, I ran into an unexpected result. I was seeing a partial session when I was expecting to see a full session when comparing across days. Initially I thought this was an issue with date comparisons. A string instead of a datetime object. Reviewing the code though that wasn't it. I added a failing test case and working back and forth with AI debugged it to a bad comparison. When I refactored from the date range determining the window, I was checking if they had parked before the window began, AI suggested that what I should really be checking is if they were still there after the session ended.
-- AI assistance: debugging; suggested refactor
+### 11. Session Expiration Logic Fix (`70036cf`)
+- Fixed incorrect session status when comparing entries across days
+- Identified issue through failing test case: was checking if vehicle parked before window began
+- Corrected logic to check if vehicle still present after session ended
+- AI assistance: Debugging session comparison logic; suggested correct expiration check
 
-### 12. Levenshtein distance (`1c30b35f`)
-- In testing the use cases against the database fixture, I discovered that `SOUNDS LIKE`, as the name implies, is auditory. Q and O don't sound anything like each other but a bit of mud on an O makes it a Q, or vice versa. I found https://lucidar.me/en/web-dev/levenshtein-distance-in-mysql/ and added the levenshtein function to my database. I then refactored the SQL query to utilise that instead of `SOUNDS LIKE`. This allowed me to enable the `testSimilarPartialVRMRecorded()` test which now passes. With a distance of 4, all tests passed, but the results were too dissimilar. I limited it to 3 which required me to disable the test that swapped an 8 and a B. Further tuning might be in order and likely regex matching (O/0, I/1, O/Q, B/8, etc.). It also returns too many responses with the right response sometimes buried.
+### 12. Levenshtein Distance Implementation (`1c30b35`)
+- Replaced `SOUNDS LIKE` with Levenshtein distance for better visual similarity matching
+- Identified limitation: `SOUNDS LIKE` is auditory (Q/O fail to match despite visual similarity from dirt/OCR errors)
+- Added MySQL Levenshtein function to database
+- Tuned distance threshold to 3 (distance of 4 returned too many dissimilar results)
+- Limitation: Returns too many results with correct match sometimes buried in response
+- Resources consulted:
+  - [Lucidar MySQL Levenshtein Distance](https://lucidar.me/en/web-dev/levenshtein-distance-in-mysql/)
 
-### 13. Regex matching (`10d5de0f`, ``)
-- To get around the issue of too many responses with the Levenshtein method, replaced it with an exact match with pattern recognition and then Levenshtein for any entries less than 9 digits using where clause; remove distance in response
-- Remove wildcard support and related tests—I had this backwards to the scenario - unless we are using OCR for issuing tickets as well in which case it is still valid
-- My initial strategy for regex was to use REPLACE to chain multiple REGEX matches, referencing https://www.devart.com/dbforge/mysql/studio/mysql-replace.html#:~:text=The%20REPLACE()%20function%20in,records%20with%20just%20one%20command, https://www.datacamp.com/doc/mysql/mysql-regexp, and https://stackoverflow.com/questions/5460364/mysql-multiple-replace-query
-- AI assistance: Asked, "I have a database of vehicle registration marks captured by camera and processed by software so the value is stored. Sometimes the software mistakes an O for a 0 or Q or any combination there of or an 8 for a B or an I and a 1. The data is stored in MySQL and I am querying it with PHP. How can I most efficiently write a query that replaces the confusing characters with a regex that allows for the other possibilities." That got me to the code at `10d5de0f` which used PHP str_replace to build things out. Easy enough but the regex didn't work, it was modifying as it went so the loop was trying to change replacements already made. 
-- AI assistance: How to get around the nested replacement issue? Two passes: one to replace the exact char with a really specific placeholder that won't exist in the code, then replace that with the regex pattern. At the same time it spotted some other issues in the code - case, the way spaces were being handled in the regex, and passing query_from and query_to along when we weren't using them
-- AI assistance: With that change I had 3 failing tests—two of those had to do with wildcard support and one with a character change of 4 to A. When adding 4/A to the pattern resulted in all the tests failing, I had to dig in again. AI suggested I was getting too many matches - the opposite of what I was seeing - but also suggested that I was making up confusions—OCR doesn't often confuse A and 4. https://communityhistoryarchives.com/100-common-ocr-letter-misinterpretations/ disagrees but there's no date on that or reference to the specific processing being used, and to really know we'd have to test our own OCR reader. AI also broke down the number of Levenshtein steps from 4 to A as just 1 so we could tune when we want to use Levenshtein to address the problem if we wanted.
-- I'm actually getting more results now with the regex pattern substitution.
+### 13. Regex Pattern Matching for OCR Errors (`10d5de0`, `de50b17`, `9e0f190`)
+**Initial implementation (`10d5de0`)**
+- Attempted to address Levenshtein result overload with regex character substitution
+- Replaced confusable characters with regex patterns (O/0/Q, I/1, B/8)
+- Removed wildcard support and related tests
+- Initial approach failed: nested replacements modified already-replaced characters
+- Resources consulted:
+  - [DevArt MySQL REPLACE function](https://www.devart.com/dbforge/mysql/studio/mysql-replace.html)
+  - [DataCamp MySQL REGEXP](https://www.datacamp.com/doc/mysql/mysql-regexp)
+  - [StackOverflow multiple REPLACE query](https://stackoverflow.com/questions/5460364/mysql-multiple-replace-query)
+- AI assistance: Generated initial character substitution approach using `str_replace()`
 
-### 14. Address too many results
-- If there is an exact match and the session is partial, return immediately instead of returning the full result set
-- Simplify the query—remove datetime and leave query_from and query_to
-- Revised the results to order by Levenshtein distance
-- AI assistance: I did this yesterday but didn't get the sequence right. After digging around in Git logs I got close but not quite. I provided the SQL query to AI and asked it to correct the query.  
+**Pattern refinement (`de50b17`)**
+- Implemented two-pass replacement: unique placeholders first, then regex patterns
+- Fixed case sensitivity, regex spacing, and parameter passing issues
+- Addressed test failures related to wildcard removal and A/4 confusion
+- Researched OCR character confusion patterns to validate substitution choices
+- Resources consulted:
+  - [Community History Archives OCR misinterpretations](https://communityhistoryarchives.com/100-common-ocr-letter-misinterpretations/)
+- AI assistance: Suggested two-pass replacement strategy; identified additional code issues; noted A/4 has Levenshtein distance of 1 for potential threshold tuning
+
+**Exact match optimization (`9e0f190`)**
+- Added early return for exact match with partial session
+- Prevents buried correct results in large response sets
+
+### 14. Result Set Optimization (`4af5ac3`, `3bd1941`, `6281d65`)
+- Removed `datetime` parameter; simplified to `query_from`/`query_to` only
+- Added datetime filter to `findByVrm()` to limit results by entry time
+- Ordered results by Levenshtein distance (closest matches first)
+- Return only latest session when VRM has an exact match and session is partial
+- AI assistance: Corrected SQL query syntax for proper parameter handling and result ordering  
 
 ### Outstanding Items
 - [ ] Timezone handling for datetime parameters in query (everything currently works so long as all the dates use the same timezone as the system timezone - but that means converting the datetime before submitting it)

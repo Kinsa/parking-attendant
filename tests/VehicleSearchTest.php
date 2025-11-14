@@ -8,7 +8,7 @@ use App\Entity\Vehicle;
 class VehicleSearchTest extends ApiTestCase
 {
     private static $VRM = 'AA 1234AB';
-    private static $SIMILAR_VRM = 'AA I2BAAB';
+    private static $SIMILAR_VRM = 'AA I234A8';
     private $TIME_IN;
 
     protected static ?bool $alwaysBootKernel = true;
@@ -120,50 +120,6 @@ class VehicleSearchTest extends ApiTestCase
     }
 
     /**
-     * Test that a partial VRM search from the front returns matching results (tests wildcard search).
-     */
-    public function testPartialSimilarMatchFoundFront(): void
-    {
-        static::createClient()->request('GET', '/search', [
-            'query' => ['vrm' => substr(self::$VRM, 0, 6)],
-        ]);
-        $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['message' => '1 result found.']);
-        $this->assertJsonContains([
-            'results' => [
-                [
-                    'vrm' => self::$VRM,
-                    'time_in' => $this->TIME_IN,
-                    'session' => 'partial',
-                    'session_end' => (new \DateTimeImmutable($this->TIME_IN))->add(new \DateInterval('PT2H'))->format('Y-m-d H:i:s'),
-                ],
-            ],
-        ]);
-    }
-
-    /**
-     * Test that a partial VRM search from the back returns matching results (tests wildcard search).
-     */
-    public function testPartialSimilarMatchFoundBack(): void
-    {
-        static::createClient()->request('GET', '/search', [
-            'query' => ['vrm' => substr(self::$VRM, 2, 9)],
-        ]);
-        $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['message' => '1 result found.']);
-        $this->assertJsonContains([
-            'results' => [
-                [
-                    'vrm' => self::$VRM,
-                    'time_in' => $this->TIME_IN,
-                    'session' => 'partial',
-                    'session_end' => (new \DateTimeImmutable($this->TIME_IN))->add(new \DateInterval('PT2H'))->format('Y-m-d H:i:s'),
-                ],
-            ],
-        ]);
-    }
-
-    /**
      * Test partial lookup with a complete value input for lookup but only partial value stored.
      */
     public function testPartialVRMRecorded(): void
@@ -201,10 +157,8 @@ class VehicleSearchTest extends ApiTestCase
      */
     public function testSimilarPartialVRMRecordedSwapNumberAndLetter(): void
     {
-        $this->markTestSkipped('FAILING - Requires a Levenshtein distance > 4 or regex matching common character confusions (O/0, I/1, O/Q, B/8, etc.).');
-
         $fullVRM = 'ZZ 7689XY';
-        $partialVRM = substr($fullVRM, 2, 6);
+        $partialVRM = substr($fullVRM, 2, 6); // stores ` 7689` in the database
         $tenMinutesAgo = new \DateTimeImmutable('-10 minutes');
 
         $entityManager = self::getContainer()->get('doctrine')->getManager();

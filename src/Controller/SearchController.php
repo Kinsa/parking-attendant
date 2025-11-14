@@ -179,7 +179,6 @@ class SearchController extends AbstractController
                         'time_in' => $time_in_str,
                         'session' => $is_expired ? 'full' : 'partial',
                         'session_end' => $session_end->format('Y-m-d H:i:s'),
-                        'distance' => $matches[$i]['distance'],
                     ];
                 }
                 $response->setData(['message' => $message, 'results' => $matches]);

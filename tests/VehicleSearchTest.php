@@ -191,7 +191,7 @@ class VehicleSearchTest extends ApiTestCase
                     'vrm' => $partialVRM,
                     'time_in' => $tenMinutesAgo->format('Y-m-d H:i:s'),
                     'session' => 'partial',
-                ]
+                ],
             ],
         ]);
     }
@@ -226,7 +226,7 @@ class VehicleSearchTest extends ApiTestCase
                     'vrm' => $partialVRM,
                     'time_in' => $tenMinutesAgo->format('Y-m-d H:i:s'),
                     'session' => 'partial',
-                ]
+                ],
             ],
         ]);
     }
@@ -378,7 +378,7 @@ class VehicleSearchTest extends ApiTestCase
                     'vrm' => self::$VRM,
                     'time_in' => $this->TIME_IN,
                     'session' => 'partial',
-                ]
+                ],
             ],
         ]);
     }
@@ -388,9 +388,8 @@ class VehicleSearchTest extends ApiTestCase
      */
     public function test48HourWindow(): void
     {
-        
         $entityManager = self::getContainer()->get('doctrine')->getManager();
-        
+
         $tenMinutesAgo = new \DateTimeImmutable('-10 minutes');
         $vehicle = new Vehicle();
         $vehicle->setVrm(self::$VRM);
@@ -625,7 +624,7 @@ class VehicleSearchTest extends ApiTestCase
             ],
         ]);
     }
-    
+
     /**
      * Test that setting a date range limits the results to the relevant vehicle.
      */
@@ -689,5 +688,4 @@ class VehicleSearchTest extends ApiTestCase
             ],
         ]);
     }
-
 }

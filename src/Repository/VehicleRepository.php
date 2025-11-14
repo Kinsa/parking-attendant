@@ -100,11 +100,13 @@ class VehicleRepository extends ServiceEntityRepository
     /**
      * @return [] Returns an array of Vehicle objects
      */
-    public function findByVrm(string $vrm, ?\DateTimeImmutable $query_from, ?\DateTimeImmutable $query_to): ?array
+    public function findByVrm(string $vrm, ?\DateTimeImmutable $datetime, ?\DateTimeImmutable $query_from, ?\DateTimeImmutable $query_to): ?array
     {
         $conn = $this->getEntityManager()->getConnection();
 
         $vrmPattern = $this->createFlexibleRegexPattern($vrm);
+
+        $datetime_str = $datetime->format('Y-m-d H:i:s');
 
         $query_from_str = $query_from ? $query_from->format('Y-m-d H:i:s') : '';
         $query_to_str = $query_to ? $query_to->format('Y-m-d H:i:s') : '';
@@ -117,6 +119,7 @@ class VehicleRepository extends ServiceEntityRepository
                     SELECT *, levenshtein(:vrm, v.vrm) AS distance
                     FROM vehicle v
                     WHERE v.vrm REGEXP :vrmPattern {$dateCondition}
+                    AND v.time_in <= :datetime
                 )
                 UNION ALL
                 (
@@ -124,6 +127,7 @@ class VehicleRepository extends ServiceEntityRepository
                     FROM vehicle v
                     WHERE levenshtein(:vrm, v.vrm) BETWEEN 0 AND 4 {$dateCondition}
                     AND CHAR_LENGTH(v.vrm) < 9
+                    AND v.time_in <= :datetime
                 )
             ) AS combined_results
             ORDER BY time_in DESC
@@ -132,6 +136,7 @@ class VehicleRepository extends ServiceEntityRepository
         $queryParameters = [
             'vrm' => $vrm,
             'vrmPattern' => $vrmPattern,
+            'datetime' => $datetime_str,
         ];
 
         if (!empty($query_from_str) && !empty($query_to_str)) {

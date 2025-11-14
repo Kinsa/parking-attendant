@@ -204,14 +204,14 @@ class VehicleSearchTest extends ApiTestCase
             'query' => ['vrm' => self::$VRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['message' => '2 results found.']);
+        $this->assertJsonContains(['message' => '1 result found.']);
         $this->assertJsonContains([
             'results' => [
                 [
                     'vrm' => self::$VRM,
                     'session_start' => $this->TIME_IN,
                     'session' => 'partial',
-                ]
+                ],
             ],
         ]);
     }
@@ -279,14 +279,9 @@ class VehicleSearchTest extends ApiTestCase
             'query' => ['vrm' => self::$VRM, 'datetime' => $yesterday->format('Y-m-d H:i:s')],
         ]);
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['message' => '2 results found.']);
+        $this->assertJsonContains(['message' => '1 result found.']);
         $this->assertJsonContains([
             'results' => [
-                [
-                    'vrm' => self::$VRM,
-                    'session_start' => $this->TIME_IN,
-                    'session' => 'partial',
-                ],
                 [
                     'vrm' => self::$VRM,
                     'session_start' => $yesterday->format('Y-m-d H:i:s'),
@@ -297,7 +292,7 @@ class VehicleSearchTest extends ApiTestCase
     }
 
     /**
-     * Test the same car, left and returned within the current window is included for both entrances with partial sessions.
+     * Test the same car, left and returned within the current window includes the latest value only (they paid on entry).
      */
     public function testSameCarTwiceWithinWindow(): void
     {
@@ -315,17 +310,12 @@ class VehicleSearchTest extends ApiTestCase
             'query' => ['vrm' => self::$VRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['message' => '2 results found.']);
+        $this->assertJsonContains(['message' => '1 result found.']);
         $this->assertJsonContains([
             'results' => [
                 [
                     'vrm' => self::$VRM,
                     'session_start' => $tenMinutesAgo->format('Y-m-d H:i:s'),
-                    'session' => 'partial',
-                ],
-                [
-                    'vrm' => self::$VRM,
-                    'session_start' => $this->TIME_IN,
                     'session' => 'partial',
                 ],
             ],
@@ -358,21 +348,12 @@ class VehicleSearchTest extends ApiTestCase
             'query' => ['vrm' => self::$VRM, 'window' => 2880],
         ]);
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['message' => '3 results found.']);
+        $this->assertJsonContains(['message' => '1 result found.']);
         $this->assertJsonContains([
             'results' => [
                 [
                     'vrm' => self::$VRM,
                     'session_start' => $tenMinutesAgo->format('Y-m-d H:i:s'),
-                    'session' => 'partial',
-                ],
-                [
-                    'vrm' => self::$VRM,
-                    'session_start' => $this->TIME_IN,
-                    'session' => 'partial',
-                ],
-                [
-                    'vrm' => self::$VRM,
                     'session' => 'partial',
                 ],
             ],

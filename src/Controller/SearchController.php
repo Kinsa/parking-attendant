@@ -138,7 +138,7 @@ class SearchController extends AbstractController
         $vehicleRepository = $this->doctrine;
 
         if (!empty($vrm)) {
-            $searchResultQueryResponse = $vehicleRepository->findByVrm($vrm, $query_from_dt, $query_to_dt);
+            $searchResultQueryResponse = $vehicleRepository->findByVrm($vrm, $calculateParkingSessionsFrom, $query_from_dt, $query_to_dt);
             $response->setStatusCode(Response::HTTP_OK);
             if (empty($searchResultQueryResponse)) {
                 $response->setData([

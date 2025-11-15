@@ -381,3 +381,4 @@ php bin/console doctrine:migrations:migrate
 
 ### Outstanding Items
 - [ ] Timezone handling for datetime parameters in query (everything currently works so long as all the dates use the same timezone as the system timezone - but that means converting the datetime before submitting it)
+- [ ] Should window be tracked via a specific datetime object instead of minutes? Minutes works well for a short-term lot, but in terms of flexibility, in a long term lot, someone might purchase a month at a time and it might be more straight forward to track that with an end date instead of minutes.

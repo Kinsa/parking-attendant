@@ -10,6 +10,7 @@ class ApiTest extends ApiTestCase
     private static $VRM = 'AA 1234AB';
     private static $SIMILAR_VRM = 'AA I234A8';
     private $TIME_IN;
+    private $API_PATH = '/api/v1/vehicle';
 
     protected static ?bool $alwaysBootKernel = true;
 
@@ -46,7 +47,7 @@ class ApiTest extends ApiTestCase
      */
     public function testNoPlateProvided(): void
     {
-        static::createClient()->request('GET', '/api/search');
+        static::createClient()->request('GET', $this->API_PATH);
 
         $this->assertResponseStatusCodeSame(400);
         $this->assertJsonContains(['message' => 'A VRM is required.']);
@@ -57,7 +58,7 @@ class ApiTest extends ApiTestCase
      */
     public function testNoResultsFound(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => 'BATH'],
         ]);
 
@@ -80,7 +81,7 @@ class ApiTest extends ApiTestCase
      */
     public function testMatchFound(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$VRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -102,7 +103,7 @@ class ApiTest extends ApiTestCase
      */
     public function testSimilarMatchFound(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$SIMILAR_VRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -136,7 +137,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => $fullVRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -169,7 +170,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => 'ZZ 76B9XY'], // '8' replaced with 'B'
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -200,7 +201,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$VRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -231,7 +232,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$VRM, 'query_to' => $yesterday->format('Y-m-d H:i:s')],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -262,7 +263,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$VRM],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -300,7 +301,7 @@ class ApiTest extends ApiTestCase
 
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$VRM, 'window' => 2880],
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -321,7 +322,7 @@ class ApiTest extends ApiTestCase
      */
     public function testBadWindow(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => self::$VRM, 'window' => 'zebra'],
         ]);
         $this->assertResponseStatusCodeSame(400);
@@ -336,7 +337,7 @@ class ApiTest extends ApiTestCase
      */
     public function testQueryFromLaterThanQueryTo(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => '2024-01-03 00:00:00',
@@ -354,7 +355,7 @@ class ApiTest extends ApiTestCase
      */
     public function testQueryFromWithBadDate(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => 'not-a-date',
@@ -372,7 +373,7 @@ class ApiTest extends ApiTestCase
      */
     public function testQueryToWithBadDate(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => '2024-01-01 00:00:00',
@@ -390,7 +391,7 @@ class ApiTest extends ApiTestCase
      */
     public function testQueryFromWithInvalidDate(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => '2023-12-32 00:00:00',
@@ -408,7 +409,7 @@ class ApiTest extends ApiTestCase
      */
     public function testQueryToWithInvalidDate(): void
     {
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => '2024-01-01 00:00:00',
@@ -442,7 +443,7 @@ class ApiTest extends ApiTestCase
         $yesterday_end = new \DateTime($yesterday_start->format('Y-m-d'));
         $yesterday_end->setTime(23, 59, 59);
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => $yesterday_start->format('Y-m-d H:i:s'),
@@ -476,7 +477,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => [
                 'vrm' => self::$VRM,
                 'query_from' => $yesterday->format('Y-m-d 00:00:00'),
@@ -513,7 +514,7 @@ class ApiTest extends ApiTestCase
         $entityManager->persist($vehicle);
         $entityManager->flush();
 
-        static::createClient()->request('GET', '/api/search', [
+        static::createClient()->request('GET', $this->API_PATH, [
             'query' => ['vrm' => $vrm, 'query_to' => $now->format('Y-m-d H:i:s')],
         ]);
         $this->assertResponseStatusCodeSame(200);

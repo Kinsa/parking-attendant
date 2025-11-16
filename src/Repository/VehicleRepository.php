@@ -123,7 +123,7 @@ class VehicleRepository extends ServiceEntityRepository
                     SELECT *, levenshtein(:vrm, v.vrm) AS distance
                     FROM vehicle v
                     WHERE levenshtein(:vrm, v.vrm) BETWEEN 0 AND 4 {$dateCondition}
-                    AND CHAR_LENGTH(v.vrm) < 9
+                    AND CHAR_LENGTH(v.vrm) < 8
                 )
             ) AS combined_results
             ORDER BY distance ASC, time_in DESC

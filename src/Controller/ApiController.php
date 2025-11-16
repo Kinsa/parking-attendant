@@ -44,7 +44,7 @@ class ApiController extends AbstractController
         return $response;
     }
 
-    #[Route('/api/search', name: 'api_search')]
+    #[Route('/api/v1/vehicle', name: 'api_v1_vehicle')]
     public function api(
         LoggerInterface $logger,
         #[MapQueryParameter] string $vrm = '',

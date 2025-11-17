@@ -40,7 +40,7 @@ The production database contains the following entries. These can be queried usi
 
 ## API Documentation
 
-### GET /api
+### GET /api/v1/vehicle
 
 Query vehicle parking records by VRM (Vehicle Registration Mark).
 

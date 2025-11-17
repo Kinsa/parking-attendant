@@ -402,5 +402,5 @@ php bin/console doctrine:migrations:migrate
 - [ ] Ordering - API query to return responses purely by date?
 - [ ] OpenAPI documentation
 - [ ] Timezone handling for datetime parameters in query: everything currently works so long as all the dates use the same timezone as the system timezone - but that means converting the datetime before submitting it.
-- [ ] Should the session window be tracked via a specific datetime object instead of minutes? Minutes work well for a short-term lot. In terms of flexibility, in a long-term lot, someone might purchase a month at a time. It might be more straight forward to track that with an end date instead of minutes.
+- [ ] Should the session window be tracked via a specific datetime object instead of minutes? Minutes work well for a short-term lot. In terms of flexibility, in a long-term lot, someone might purchase a month at a time. The start of the window wouldn't be the time they entered the lot in that case.
 - [ ] Custom / non-UK plate handling. Specific implications include that we are currently running Levenshtein if the match is less than 8 characters. The dataset should include some custom options.

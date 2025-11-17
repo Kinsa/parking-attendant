@@ -252,7 +252,7 @@ php bin/console doctrine:migrations:migrate
   - [Symfony testing documentation](https://symfony.com/doc/current/testing.html)
   - [API Platform testing guide](https://api-platform.com/docs/symfony/testing/#creating-data-fixtures)
 - AI Assistance:
-  - Configured PHPStorm test runner with KERNEL_CLASS ([`cfefea7`](https://github.com/Kinsa/ParkingAttendantBackend/commit/cfefea7)), , refactoring tests from setup / tear down per-test to per-suite, docker config, api-pack installation, ignoring bits of the response when JSON response matching 
+  - Configured PHPStorm test runner with KERNEL_CLASS ([`cfefea7`](https://github.com/Kinsa/ParkingAttendantBackend/commit/cfefea7)), refactoring tests from setup / tear down per-test to per-suite, docker config, api-pack installation, ignoring bits of the response when JSON response matching 
 
 ### 5. Fuzzy Search Implementation ([`7b00104`](https://github.com/Kinsa/ParkingAttendantBackend/commit/7b00104), [`0455d40`](https://github.com/Kinsa/ParkingAttendantBackend/commit/0455d40))
 - Implemented SOUNDEX for fuzzy matching

@@ -529,4 +529,57 @@ class ApiTest extends ApiTestCase
             ],
         ]);
     }
+
+    /**
+     * This specific plate caused an issue. The vrmPattern should be `^MA[0OQ]6[ ]?GL[0OQ]$`.
+     */
+    public function testRegexPatternMatching(): void
+    {
+        $vrm = 'MA06 GLO';
+        $tenMinutesAgo = new \DateTimeImmutable('-10 minutes');
+
+        $entityManager = self::getContainer()->get('doctrine')->getManager();
+        $vehicle = new Vehicle();
+        $vehicle->setVrm($vrm);
+        $vehicle->setTimeIn($tenMinutesAgo);
+
+        $entityManager->persist($vehicle);
+        $entityManager->flush();
+
+        static::createClient()->request('GET', $this->API_PATH, [
+            'query' => ['vrm' => $vrm],
+        ]);
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertJsonContains(['message' => '1 result found.']);
+        $this->assertJsonContains([
+            'results' => [
+                [
+                    'vrm' => $vrm,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * VRM can only contain letters and numbers, optionally formatted with spaces.
+     */
+    public function testVRMPattern(): void
+    {
+        $vrm = 'MA06_GLO';
+        $tenMinutesAgo = new \DateTimeImmutable('-10 minutes');
+
+        $entityManager = self::getContainer()->get('doctrine')->getManager();
+        $vehicle = new Vehicle();
+        $vehicle->setVrm($vrm);
+        $vehicle->setTimeIn($tenMinutesAgo);
+
+        $entityManager->persist($vehicle);
+        $entityManager->flush();
+
+        static::createClient()->request('GET', $this->API_PATH, [
+            'query' => ['vrm' => $vrm],
+        ]);
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertJsonContains(['message' => 'Invalid VRM format. VRM must only contain letters and numbers. Spaces are allowed.']);
+    }
 }

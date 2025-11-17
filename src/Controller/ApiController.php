@@ -106,6 +106,13 @@ class ApiController extends AbstractController
         $vehicleRepository = $this->doctrine;
 
         if (!empty($vrm)) {
+            $vrmPattern = '/^[A-Za-z0-9\s]+$/';
+            if (!preg_match($vrmPattern, $vrm)) {
+                $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                $response->setData(['message' => 'Invalid VRM format. VRM must only contain letters and numbers. Spaces are allowed.']);
+                return $response;
+            }
+
             $searchResultQueryResponse = $vehicleRepository->findByVrm($vrm, $calculateParkingSessionsFrom, $query_from_dt);
             $response->setStatusCode(Response::HTTP_OK);
             if (empty($searchResultQueryResponse)) {

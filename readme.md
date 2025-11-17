@@ -389,7 +389,10 @@ php bin/console doctrine:migrations:migrate
 - Set the endpoint route to `/api/v1/vehicle` rather than `/search` to allow a frontend to sit at `/`, to version the API for future use, and to make the name more generic to allow for `POST` as well as `GET` requests
 - [Prototyped front end](https://github.com/Kinsa/ParkingAttendantFrontend) to validate usability of ordering and fuzzy search 
 
+### 16. 
+
 ### Outstanding Items / Questions
+- [ ] Raise an error if the VRM value contains anything other than A-Z, space, or 0-9 once capitalised
 - [ ] Pagination - probably not necessary with date parameters?
 - [ ] Ordering - API query to return responses purely by date?
 - [ ] OpenAPI documentation

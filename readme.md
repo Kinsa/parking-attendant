@@ -389,7 +389,10 @@ php bin/console doctrine:migrations:migrate
 - Set the endpoint route to `/api/v1/vehicle` rather than `/search` to allow a frontend to sit at `/`, to version the API for future use, and to make the name more generic to allow for `POST` as well as `GET` requests
 - [Prototyped front end](https://github.com/Kinsa/ParkingAttendantFrontend) to validate usability of ordering and fuzzy search 
 
-### 16. 
+### 16. Revise Regex Pattern Matching to Account for Character Order ([`30afd0f`](https://github.com/Kinsa/ParkingAttendantBackend/commit/30afd0f), [`9a1fb8d`](https://github.com/Kinsa/ParkingAttendantBackend/commit/9a1fb8d))
+- When running through the Postman scenarios one last time I saw that I was getting an unexpected result for a plate I thought had been passing. Using Xdebug I identified that the order of characters which the REGEX did pattern substitution against was very important. Cleaned up the pattern to not include any alphanumeric characters other than the match and added tests.
+- Added regex matching of the VRM itself
+- AI assistance: validated the VRM regex
 
 ### Outstanding Items / Questions
 - [ ] Raise an error if the VRM value contains anything other than A-Z, space, or 0-9 once capitalised

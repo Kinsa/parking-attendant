@@ -62,17 +62,17 @@ class VehicleRepository extends ServiceEntityRepository
         // Replace commonly confused OCR characters with character classes
         // Use a temporary placeholder to avoid replacing characters within the character classes
         $replacements = [
-            '0' => '___PLACEHOLDER_0___',
-            'O' => '___PLACEHOLDER_O___',
-            'Q' => '___PLACEHOLDER_Q___',
-            '1' => '___PLACEHOLDER_1___',
-            'I' => '___PLACEHOLDER_I___',
-            '8' => '___PLACEHOLDER_8___',
-            'B' => '___PLACEHOLDER_B___',
-            '5' => '___PLACEHOLDER_5___',
-            'S' => '___PLACEHOLDER_S___',
-            '2' => '___PLACEHOLDER_2___',
-            'Z' => '___PLACEHOLDER_Z___',
+            '0' => '___0___',
+            'O' => '___O___',
+            'Q' => '___Q___',
+            '1' => '___1___',
+            'I' => '___I___',
+            '8' => '___8___',
+            'B' => '___B___',
+            '5' => '___5___',
+            'S' => '___S___',
+            '2' => '___2___',
+            'Z' => '___Z___',
         ];
 
         // First pass: replace with placeholders
@@ -81,17 +81,17 @@ class VehicleRepository extends ServiceEntityRepository
         }
 
         // Second pass: replace placeholders with character classes
-        $pattern = str_replace('___PLACEHOLDER_0___', '[0OQ]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_O___', '[0OQ]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_Q___', '[0OQ]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_1___', '[1I]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_I___', '[1I]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_8___', '[8B]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_B___', '[8B]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_5___', '[5S]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_S___', '[5S]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_2___', '[2Z]', $pattern);
-        $pattern = str_replace('___PLACEHOLDER_Z___', '[2Z]', $pattern);
+        $pattern = str_replace('___0___', '[0OQ]', $pattern);
+        $pattern = str_replace('___O___', '[0OQ]', $pattern);
+        $pattern = str_replace('___Q___', '[0OQ]', $pattern);
+        $pattern = str_replace('___1___', '[1I]', $pattern);
+        $pattern = str_replace('___I___', '[1I]', $pattern);
+        $pattern = str_replace('___8___', '[8B]', $pattern);
+        $pattern = str_replace('___B___', '[8B]', $pattern);
+        $pattern = str_replace('___5___', '[5S]', $pattern);
+        $pattern = str_replace('___S___', '[5S]', $pattern);
+        $pattern = str_replace('___2___', '[2Z]', $pattern);
+        $pattern = str_replace('___Z___', '[2Z]', $pattern);
 
         // Add anchors
         return '^'.$pattern.'$';

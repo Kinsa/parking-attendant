@@ -1,8 +1,8 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches: [ "main" ]
+#  push:
+#    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:  # Allows manual triggering from GitHub UI
@@ -70,21 +70,18 @@ jobs:
         script: |
           cd /var/www/parking.kinsacreative.com
 
+          # Set group ownership to www-data (PHP-FPM user) and give group write access
+          chown -R webapps:www-data .
+          chmod -R 775 var
+
+          # Create log directory if it doesn't exist
+          mkdir -p var/log var/cache
+
+          # Set setgid bit so new files inherit www-data group automatically
+          chmod g+s var/cache var/log
+
           # Clear prod cache
           php bin/console cache:clear --env=prod --no-debug
 
           # Warm it up (pre-builds cache for better first request performance)
           php bin/console cache:warmup --env=prod
-
-          # Create log directory if it doesn't exist
-          mkdir -p var/log var/cache
-
-          # Set group ownership to www-data (PHP-FPM user) and give group write access
-          chown -R webapps:www-data .
-          chmod -R 775 var
-
-          # Set setgid bit so new files inherit www-data group automatically
-          chmod g+s var/cache var/log
-
-          # Note: PHP-FPM reload requires sudo with password,
-          # OPcache will clear automatically on next request or use opcache_reset() in code

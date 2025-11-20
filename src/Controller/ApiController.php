@@ -54,13 +54,13 @@ class ApiController extends AbstractController
     ): JsonResponse {
         // Set default values for date parameters if not provided
         if (empty($query_to)) {
-            $calculateParkingSessionsFrom = new \DateTimeImmutable('now');
+            $queryToDate = new \DateTimeImmutable('now');
         } else {
             if (!self::isValidDateTime($query_to)) {
                 return self::returnInvalidDateResponse('query_to');
             } else {
                 try {
-                    $calculateParkingSessionsFrom = new \DateTimeImmutable($query_to);
+                    $queryToDate = new \DateTimeImmutable($query_to);
                 } catch (\Exception $e) {
                     return self::returnInvalidDateResponse('query_to');
                 }
@@ -80,13 +80,13 @@ class ApiController extends AbstractController
 
         // From and to
         if (empty($query_from)) {
-            $query_from_dt = null;
+            $queryFromDate = null;
         } else {
             if (!self::isValidDateTime($query_from)) {
                 return self::returnInvalidDateResponse('query_from');
             } else {
                 try {
-                    $query_from_dt = new \DateTimeImmutable($query_from);
+                    $queryFromDate = new \DateTimeImmutable($query_from);
                 } catch (\Exception $e) {
                     return self::returnInvalidDateResponse('query_from');
                 }
@@ -94,7 +94,7 @@ class ApiController extends AbstractController
         }
 
         $response = new JsonResponse();
-        if ($query_from_dt && $query_from_dt > $calculateParkingSessionsFrom) {
+        if ($queryFromDate && $queryFromDate > $queryToDate) {
             $response->setStatusCode(Response::HTTP_BAD_REQUEST);
             $response->setData(['message' => 'query_from must be earlier than or equal to query_to.']);
 
@@ -113,7 +113,7 @@ class ApiController extends AbstractController
                 return $response;
             }
 
-            $searchResultQueryResponse = $vehicleRepository->findByVrm($vrm, $calculateParkingSessionsFrom, $query_from_dt);
+            $searchResultQueryResponse = $vehicleRepository->findByVrm($vrm, $queryToDate, $queryFromDate);
             $response->setStatusCode(Response::HTTP_OK);
             if (empty($searchResultQueryResponse)) {
                 $response->setData([
@@ -146,7 +146,7 @@ class ApiController extends AbstractController
                     $session_end = $time_in->add($parkingWindow); // Adds parking window to time_in
 
                     // Parking is expired if current time is past the session end time
-                    $isExpired = $calculateParkingSessionsFrom > $session_end;
+                    $isExpired = $queryToDate > $session_end;
 
                     if (!$isExpired && $searchResultQueryResponse[$i]['vrm'] === $vrm) {
                         // If we have a partial session and an exact VRM match, return only the single result
